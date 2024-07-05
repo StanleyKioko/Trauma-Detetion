@@ -7,31 +7,35 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div id="login-box">
-        <form action="/signup" method="post" >
+    <header>
+        <h1>Sign Up / Login</h1>
+    </header>
+    <main>
+        <div id="login-box">
             <div id="signup-form" class="form-container">
-                <div class="left">
-                    <h1>Sign up</h1>
+                <form action="/signup" method="post">
+                    <h2>Sign Up</h2>
                     <input type="text" id="signup-email" name="email" placeholder="E-mail" required/>
                     <input type="password" id="signup-password" name="password" placeholder="Password" required/>
                     <input type="text" id="signup-username" name="username" placeholder="Username" required/>
-                    <input type="submit" id="signup" name="signup_submit" value="Sign up"/>
-                </div>
+                    <input type="submit" id="signup" name="signup_submit" value="Sign Up" class="blue-button"/>
+                </form>
                 <div class="or">Already have an account? <a href="#" id="show-login">Login here</a></div>
             </div>
-        </form>
-        <div id="login-form" class="form-container" style="display: none;">
-            <form action="/login" method="post">
-                <div class="left">
-                    <h1>Login</h1>
+            <div id="login-form" class="form-container" style="display: none;">
+                <form action="/login" method="post">
+                    <h2>Login</h2>
                     <input type="text" id="login-email" name="email" placeholder="E-mail" required/>
                     <input type="password" id="login-password" name="password" placeholder="Password" required/>
-                    <input type="submit" id="login" name="login_submit" value="Login"/>
-                </div>
-                <div class="or">Don't have an account? <a href="#" id="show-signup">Sign up here</a></div>
-            </form>
+                    <input type="submit" id="login" name="login_submit" value="Login" class="blue-button"/>
+                </form>
+                <div class="or">Don't have an account? <a href="#" id="show-signup">Sign Up here</a></div>
+            </div>
         </div>
-    </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Stanley Mwange</p>
+    </footer>
     <script>
         document.getElementById('show-login').addEventListener('click', (e) => {
             e.preventDefault();
