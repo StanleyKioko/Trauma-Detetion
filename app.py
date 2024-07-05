@@ -13,6 +13,40 @@ users = {}
 model = joblib.load('best_model.pkl')
 print("Model loaded successfully")
 
+# Define trauma stages
+trauma_stages = {
+    0: {
+        'stage': 'Anger',
+        'characteristics': 'Characterized by frustration and anger.,Anxiety,Emotional exhaustion,High blood pressure,Insomnia,Passive-aggressive behavior,Alterations in thinking and mood,Continued obsession with the traumatic event,Depression,Difficulty concentrating,Intrusive memories,Muscle tension,Rapid breathing or hyperventilation',
+        'solutions': ['Therapy', 'Anger management', 'Support groups']
+    },
+    1: {
+        'stage': 'Sadness',
+        'characteristics': 'Characterized by deep sadness and crying., exhaustion, confusion, sadness, anxiety, agitation, numbness, dissociation, confusion, physical arousal, and blunted affect.',
+        'solutions': ['Counseling', 'Emotional support', 'Medication']
+    },
+    2: {
+        'stage': 'Acceptance',
+        'characteristics': 'Acceptance is the final stage of the trauma response cycle.',
+        'solutions': ['Mindfulness', 'Support networks', 'Therapy']
+    },
+    3: {
+        'stage': 'Denial',
+        'characteristics': 'Characterized by refusal to acknowledge the trauma.,Many may isolate themselves from others while struggling in the denial stage',
+        'solutions': ['Counseling', 'Education about trauma', 'Peer support']
+    },
+    4: {
+        'stage': 'Bargaining',
+        'characteristics': 'Characterized by attempts to negotiate out of trauma. The bargaining stage of trauma focuses on thoughts that take place within the mind. These thoughts occur as someone tries to explain how things could have been done differently or better. In a sense, these negotiations are an individuals thoughts attempting to exchange one thing for another',
+        'solutions': ['Therapy', 'Support groups', 'Stress management']
+    },
+    5: {
+        'stage': 'Depression',
+        'characteristics': 'Characterized by feelings of severe despondency.negative emotions, guilt, shame, self-blame, social withdrawal, or social isolation.',
+        'solutions': ['Counseling', 'Medication', 'Therapeutic activities']
+    }
+}
+
 @app.route('/')
 def index():
     if 'username' in session:
@@ -75,6 +109,10 @@ def predict():
                 float(data['sleep_patterns']),
                 float(data['emotional_regulation'])
             ]
+
+            # Check if all features are zero
+            if all(feature == 0 for feature in features):
+                return redirect(url_for('results', stage='Unknown', characteristics='', solutions=''))
             
             # Convert features to a numpy array and reshape for prediction
             features = np.array(features).reshape(1, -1)
@@ -82,19 +120,21 @@ def predict():
             # Make the prediction
             prediction = model.predict(features)
 
-            # Define trauma stages
-            trauma_stage = {
-                0: 'Anger',
-                1: 'Sadness',
-                2: 'Acceptance',
-                3: 'Denial',
-                4: 'Bargaining',
-                5: 'Depression'
-            }
-            predicted_stage = trauma_stage.get(prediction[0], 'Unknown')  # Default to 'Unknown' if prediction is invalid
-            
+            # Get the predicted trauma stage
+            predicted_stage = trauma_stages.get(prediction[0], None)
+
+            if predicted_stage is None:
+                return jsonify({'error': 'Invalid prediction'}), 400
+
+            # Prepare the characteristics and solutions for URL
+            characteristics = '|'.join(predicted_stage['characteristics'].split(','))
+            solutions = '|'.join(predicted_stage['solutions'])
+
             # Redirect to the results page with the prediction result
-            return redirect(url_for('results', result=predicted_stage))
+            return redirect(url_for('results', 
+                                    stage=predicted_stage['stage'], 
+                                    characteristics=characteristics, 
+                                    solutions=solutions))
         
         except KeyError as e:
             # Handle missing data keys
@@ -108,8 +148,14 @@ def predict():
 def results():
     if 'username' not in session:
         return redirect(url_for('signup'))
-    result = request.args.get('result', 'No result available')
-    return render_template('results.html', result=result)
+    
+    stage = request.args.get('stage', 'No result available')
+    characteristics = request.args.get('characteristics', 'No characteristics available')
+    solutions_str = request.args.get('solutions', '')
+    solutions = solutions_str.split('|')
+    characteristics_list = characteristics.split('|') if characteristics else []
+
+    return render_template('results.html', stage=stage, characteristics=characteristics_list, solutions=solutions)
 
 @app.route('/logout')
 def logout():

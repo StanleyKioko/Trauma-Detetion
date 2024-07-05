@@ -8,16 +8,22 @@
 </head>
 <body>
     <header>
-        <h1>Child Trauma Stage Detection System</h1>
+        <h1>Welcome to the Child Trauma Stage Detection System</h1>
     </header>
     <main>
         <section id="welcome-section">
-            <h2>Welcome to Child Trauma Stage Detetion System, {{ username }}</h2>
+            <h2>Hello, {{ username }}!</h2>
             <p>
-                Our website is dedicated to helping children, parents, and caregivers understand and navigate the complex landscape of child trauma.
+                Our mission is to support you in identifying the stages of trauma in children and providing guidance for effective intervention. With our system, you can gain insights into the emotional and psychological impact of trauma and explore practical solutions.
             </p>
+            <p>
+                Take the first step towards understanding and healing by using our prediction tool. We’re here to assist you every step of the way.
+            </p>
+            <div class="button-container">
+                <button id="predictPageButton">Explore the Prediction Tool</button>
+                <button id="signupPageButton">Go to Sign-Up Page</button>
+            </div>
         </section>
-        <button id="predictPageButton">Go to Prediction Page</button>
     </main>
     <footer>
         <p>&copy; 2024 Stanley Mwange</p>
@@ -25,6 +31,10 @@
     <script>
         document.getElementById('predictPageButton').addEventListener('click', () => {
             window.location.href = '/predict';
+        });
+
+        document.getElementById('signupPageButton').addEventListener('click', () => {
+            window.location.href = '/signup';
         });
     </script>
 </body>

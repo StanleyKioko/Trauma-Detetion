@@ -32,10 +32,11 @@
             <input type="number" id="sleep_patterns" name="sleep_patterns" min="0" max="10" required>
             <label for="emotional_regulation">How good is the Child at Emotional Regulation:</label>
             <input type="number" id="emotional_regulation" name="emotional_regulation" min="0" max="10" required>
-
-            <input type="submit" value="Get Prediction">
+            <div class="center-buttons">
+                <input type="submit" value="Get Prediction">
+                <button id="goBackButton">Go Back</button>
+            </div>
         </form>
-        <button id="goBackButton">Go Back</button>
     </main>
     <script>
         document.getElementById('goBackButton').addEventListener('click', () => {
