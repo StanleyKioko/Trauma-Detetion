@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Trauma Model - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Child Trauma Model</h1>
+    </header>
+    <main>
+        <section id="welcome-section">
+            <h2>Welcome to Child Trauma Model, {{ username }}</h2>
+            <p>
+                Our website is dedicated to helping children, parents, and caregivers understand and navigate the complex landscape of child trauma.
+            </p>
+        </section>
+        <button id="predictPageButton">Go to Prediction Page</button>
+    </main>
+    <footer>
+        <p>&copy; 2024 Child Trauma Prediction</p>
+    </footer>
+    <script>
+        document.getElementById('predictPageButton').addEventListener('click', () => {
+            window.location.href = '/predict';
+        });
+    </script>
+</body>
+</html>
