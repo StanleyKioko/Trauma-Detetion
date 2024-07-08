@@ -2,12 +2,29 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 import joblib
 import numpy as np
 from werkzeug.security import generate_password_hash, check_password_hash
+import pyrebase
+import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
 
-# Simulated user database
-users = {}
+# Firebase Configuration
+firebaseConfig = {
+    'apiKey': "AIzaSyCJ_3tFr0xvhVRtnwPG2SpL0FfZyUP9-V4",
+    'authDomain': "database-22a18.firebaseapp.com",
+    'databaseURL': "https://database-22a18-default-rtdb.firebaseio.com",
+    'projectId': "database-22a18",
+    'storageBucket': "database-22a18.appspot.com",
+    'messagingSenderId': "592734301931",
+    'appId': "1:592734301931:web:283a373c93106c891218ae"
+}
+
+# Initialize Firebase
+firebase = pyrebase.initialize_app(firebaseConfig)
+auth = firebase.auth()
+db = firebase.database()
+
+# Set a secret key for session management
+app.secret_key = os.urandom(24)
 
 # Load the saved model
 model = joblib.load('best_model.pkl')
@@ -49,25 +66,51 @@ trauma_stages = {
 
 @app.route('/')
 def index():
-    if 'username' in session:
+    if 'user' in session:
         return redirect(url_for('home'))
     return redirect(url_for('signup'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form['username']
         email = request.form['email']
         password = request.form['password']
-        if email in users:
-            return jsonify({'error': 'User already exists'}), 400
-        users[email] = {
-            'username': username,
-            'email': email,
-            'password': generate_password_hash(password)
-        }
-        session['username'] = username
-        return redirect(url_for('home'))
+        full_name = request.form['username']
+        id_number = request.form['id_number']
+        country_code = request.form['country_code']
+        phone_number = request.form['phone_number']
+        try:
+            user = auth.create_user_with_email_and_password(email, password)
+            user_id = user['localId']
+            data = {
+                "full_name": full_name,
+                "email": email,
+                "id_number": id_number,
+                "country_code": country_code,
+                "phone_number": phone_number
+            }
+            db.child("users").child(user_id).set(data)
+            session['user'] = user
+            return redirect(url_for('home'))
+        except Exception as e:
+            error_message = str(e)
+            if "EMAIL_EXISTS" in error_message:
+                error_message = "The email address is already in use. Please use a different email address."
+            elif "INVALID_EMAIL" in error_message:
+                error_message = "Invalid email address. Please check your email and try again."
+            elif "WEAK_PASSWORD" in error_message:
+                error_message = "The password is too weak. Please choose a stronger password."
+            elif "USER_DISABLED" in error_message:
+                error_message = "This user account has been disabled."
+            elif "INVALID_PASSWORD" in error_message:
+                error_message = "The password is invalid or the user does not have a password."
+            elif "USER_NOT_FOUND" in error_message:
+                error_message = "There is no user corresponding to this email address."
+            elif "OPERATION_NOT_ALLOWED" in error_message:
+                error_message = "Operation not allowed. Please contact support."
+            else:
+                error_message = "An unexpected error occurred: " + error_message
+            return render_template('signup.html', error=error_message)
     return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -75,23 +118,38 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user = users.get(email)
-        if user and check_password_hash(user['password'], password):
-            session['username'] = user['username']
+        try:
+            user = auth.sign_in_with_email_and_password(email, password)
+            session['user'] = user
             return redirect(url_for('home'))
-        return jsonify({'error': 'Invalid credentials'}), 400
-    return render_template('signup.html')
+        except Exception as e:
+            error_message = str(e)
+            if "INVALID_EMAIL" in error_message:
+                error_message = "Invalid email address. Please check your email and try again."
+            elif "USER_NOT_FOUND" in error_message:
+                error_message = "No account found with this email address. Please sign up."
+            elif "INVALID_PASSWORD" in error_message:
+                error_message = "Incorrect password. Please try again."
+            elif "USER_DISABLED" in error_message:
+                error_message = "This user account has been disabled."
+            else:
+                error_message = "An unexpected error occurred: " + error_message
+            return render_template('login.html', error=error_message)
+    return render_template('login.html')
 
 @app.route('/home')
 def home():
-    if 'username' not in session:
-        return redirect(url_for('signup'))
-    return render_template('home.html', username=session['username'])
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    user = session['user']
+    user_info = db.child("users").child(user['localId']).get().val()
+    username = user_info['full_name']
+    return render_template('home.html', username=username)
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    if 'username' not in session:
-        return redirect(url_for('signup'))
+    if 'user' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         try:
             data = request.form  # Get the form data
@@ -146,8 +204,8 @@ def predict():
 
 @app.route('/results')
 def results():
-    if 'username' not in session:
-        return redirect(url_for('signup'))
+    if 'user' not in session:
+        return redirect(url_for('login'))
     
     stage = request.args.get('stage', 'No result available')
     characteristics = request.args.get('characteristics', 'No characteristics available')
@@ -155,12 +213,12 @@ def results():
     solutions = solutions_str.split('|')
     characteristics_list = characteristics.split('|') if characteristics else []
 
-    return render_template('results.html', stage=stage, characteristics=characteristics_list, solutions=solutions)
+    return render_template('Results.html', stage=stage, characteristics=characteristics_list, solutions=solutions)
 
 @app.route('/logout')
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('signup'))
+    session.pop('user', None)
+    return redirect(url_for('login'))
 
 @app.errorhandler(404)
 def page_not_found(e):
