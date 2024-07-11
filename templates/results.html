@@ -16,15 +16,11 @@
         </div>
         <div class="result-section">
             <h3>Characteristics</h3>
-            <ul>
-                {% for characteristic in characteristics %}
-                    <li>{{ characteristic }}</li>
-                {% endfor %}
-            </ul>
+            <p class="result-characteristics">{{ characteristics }}</p>
         </div>
         <div class="result-section">
             <h3>Possible Interventions</h3>
-            <ul>
+            <ul class="result-solutions">
                 {% for solution in solutions %}
                     <li>{{ solution }}</li>
                 {% endfor %}

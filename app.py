@@ -34,12 +34,12 @@ print("Model loaded successfully")
 trauma_stages = {
     0: {
         'stage': 'Anger',
-        'characteristics': 'Characterized by frustration and anger.,Anxiety,Emotional exhaustion,High blood pressure,Insomnia,Passive-aggressive behavior,Alterations in thinking and mood,Continued obsession with the traumatic event,Depression,Difficulty concentrating,Intrusive memories,Muscle tension,Rapid breathing or hyperventilation',
+        'characteristics': 'Characterized by frustration and anger, Anxiety, Emotional exhaustion, High blood pressure, Insomnia, Passive-aggressive behavior, Alterations in thinking and mood, Continued obsession with the traumatic event, Depression, Difficulty concentrating, Intrusive memories, Muscle tension, Rapid breathing or hyperventilation',
         'solutions': ['Therapy', 'Anger management', 'Support groups']
     },
     1: {
         'stage': 'Sadness',
-        'characteristics': 'Characterized by deep sadness and crying., exhaustion, confusion, sadness, anxiety, agitation, numbness, dissociation, confusion, physical arousal, and blunted affect.',
+        'characteristics': 'Characterized by deep sadness and crying, exhaustion, confusion, sadness, anxiety, agitation, numbness, dissociation, confusion, physical arousal, and blunted affect.',
         'solutions': ['Counseling', 'Emotional support', 'Medication']
     },
     2: {
@@ -49,17 +49,17 @@ trauma_stages = {
     },
     3: {
         'stage': 'Denial',
-        'characteristics': 'Characterized by refusal to acknowledge the trauma.,Many may isolate themselves from others while struggling in the denial stage',
+        'characteristics': 'Characterized by refusal to acknowledge the trauma. Many may isolate themselves from others while struggling in the denial stage.',
         'solutions': ['Counseling', 'Education about trauma', 'Peer support']
     },
     4: {
         'stage': 'Bargaining',
-        'characteristics': 'Characterized by attempts to negotiate out of trauma. The bargaining stage of trauma focuses on thoughts that take place within the mind. These thoughts occur as someone tries to explain how things could have been done differently or better. In a sense, these negotiations are an individuals thoughts attempting to exchange one thing for another',
+        'characteristics': 'Characterized by attempts to negotiate out of trauma. The bargaining stage of trauma focuses on thoughts that take place within the mind. These thoughts occur as someone tries to explain how things could have been done differently or better.',
         'solutions': ['Therapy', 'Support groups', 'Stress management']
     },
     5: {
         'stage': 'Depression',
-        'characteristics': 'Characterized by feelings of severe despondency.negative emotions, guilt, shame, self-blame, social withdrawal, or social isolation.',
+        'characteristics': 'Characterized by feelings of severe despondency, negative emotions, guilt, shame, self-blame, social withdrawal, or social isolation.',
         'solutions': ['Counseling', 'Medication', 'Therapeutic activities']
     }
 }
@@ -198,31 +198,34 @@ def predict():
             # Handle missing data keys
             return jsonify({'error': f'Missing key: {str(e)}'}), 400
         except Exception as e:
-            # Handle other exceptions
-            return jsonify({'error': str(e)}), 400
+            # Handle any other exceptions
+            return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
     return render_template('predict.html')
 
 @app.route('/results')
 def results():
     if 'user' not in session:
         return redirect(url_for('login'))
-    
-    stage = request.args.get('stage', 'No result available')
-    characteristics = request.args.get('characteristics', 'No characteristics available')
-    solutions_str = request.args.get('solutions', '')
-    solutions = solutions_str.split('|')
-    characteristics_list = characteristics.split('|') if characteristics else []
-
-    return render_template('Results.html', stage=stage, characteristics=characteristics_list, solutions=solutions)
+    stage = request.args.get('stage', 'Unknown')
+    characteristics = request.args.get('characteristics', '')
+    solutions = request.args.get('solutions', '')
+    characteristics = characteristics.replace('|', ', ')
+    solutions = solutions.replace('|', ', ')
+    return render_template('results.html', stage=stage, characteristics=characteristics, solutions=solutions)
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
+@app.route('/make_another_prediction')
+def make_another_prediction():
+    return redirect(url_for('predict'))
+
 @app.errorhandler(404)
 def page_not_found(e):
-    return jsonify({'error': 'Page not found'}), 404
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
