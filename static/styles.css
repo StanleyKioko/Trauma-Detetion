@@ -259,7 +259,7 @@ h1, h2 {
     font-size: 1.1em;
     line-height: 1.6;
     margin-bottom: 30px;
-    text-align: left;
+    text-align: center;
     list-style-type: none; /* Removes default list styling */
     padding: 0; /* Removes default padding */
 }
@@ -271,14 +271,14 @@ h1, h2 {
     position: relative;
 }
 
-.results-container .result-solutions li::before {
+/*.results-container .result-solutions li::before {
     content: '•';
     color: #1e90ff;
     font-size: 1.5em;
     position: absolute;
     left: -30px; /* Adjusted to ensure bullets do not overlap text */
-    top: 0;
-}
+    /*top: 0;
+}*/
 
 .results-container .button-container {
     text-align: center;
