@@ -10,13 +10,17 @@
 <body>
     <header>
         <h1>Welcome, {{ username }}</h1>
-        <a href="{{ url_for('logout') }}">Logout</a>
+        <div class="header-buttons">
+            <a href="{{ url_for('signup') }}" class="go-back-button">Go Back to Sign Up</a>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
     </header>
     <main>
+        <h2>Welcome to the Child Trauma Stage Prediction System</h2>
+        <h3>Welcome, {{ username }}!</h3>
         <h2>Prediction Form</h2>
         <form id="prediction-form">
             <input type="hidden" name="doctor_id" value="{{ doctor_id }}">
-
             <label for="severity">Severity:</label>
             <input type="text" id="severity" name="severity" required><br>
             

@@ -1,46 +1,93 @@
+/* General styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f4f4f4;
+    color: #333;
     margin: 0;
     padding: 0;
 }
 
-.container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+h1, h2 {
+    text-align: center;
+    color: #007bff; /* Blue color */
 }
 
-h1 {
-    text-align: center;
-    color: #333;
+a {
+    color: #007bff; /* Blue color */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #007bff; /* Blue color */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+.header-link {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #0056b3; /* Darker blue */
+    border-radius: 4px;
+}
+
+.header-link:hover {
+    background-color: #003d7a; /* Even darker blue */
+}
+
+/* Main content styles */
+main {
+    padding: 20px;
 }
 
 form {
-    margin-bottom: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin: 10px 0 5px;
 }
 
-input[type="number"],
-textarea {
+input[type="text"],
+input[type="email"],
+input[type="password"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 4px;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #5cb85c;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #007bff; /* Blue color */
     color: white;
     border: none;
     border-radius: 4px;
@@ -48,26 +95,76 @@ button {
 }
 
 button:hover {
-    background-color: #4cae4c;
+    background-color: #0056b3; /* Darker blue */
 }
 
-#messages {
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 4px;
-    height: 150px;
-    overflow-y: scroll;
-    margin-bottom: 20px;
+/* Chat section styles */
+#chat {
+    margin-top: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.prediction {
+#chat-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #f4f4f4;
     padding: 10px;
-    border: 1px solid #ccc;
     border-radius: 4px;
     margin-bottom: 10px;
 }
 
-.prediction p {
-    margin: 0;
-    padding: 2px 0;
+.chat-message {
+    margin-bottom: 10px;
+}
+
+.chat-message.patient {
+    text-align: left;
+}
+
+.chat-message.doctor {
+    text-align: right;
+}
+
+/* Sign Up and Login Page Styles */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+    color: red;
+}
+
+/* Logout and Go Back buttons */
+.logout-button,
+.go-back-button {
+    display: inline-block;
+    padding: 10px;
+    background-color: #007bff; /* Blue color */
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.logout-button:hover,
+.go-back-button:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+/* Positioning Logout and Go Back buttons */
+.header-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.header-buttons a {
+    margin: 0 10px;
 }

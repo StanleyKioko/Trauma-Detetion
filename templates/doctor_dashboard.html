@@ -8,44 +8,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-    <h1>Welcome, {{ username }}</h1>
-    <form method="post">
-        <label for="submission_id">Enter Submission ID:</label>
-        <input type="text" id="submission_id" name="submission_id" required>
-        <button type="submit">Retrieve</button>
-    </form>
+    <header>
+        <h1>Welcome, Dr. {{ username }}</h1>
+        <div class="header-buttons">
+            <a href="{{ url_for('signup') }}" class="go-back-button">Go Back to Sign Up</a>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>
+    <main>
+        <h2>Welcome, Dr. {{ username }}!</h2>
+        <h2>Retrieve Prediction</h2>
+        <form method="post">
+            <label for="submission_id">Enter Submission ID:</label>
+            <input type="text" id="submission_id" name="submission_id" required>
+            <button type="submit">Retrieve</button>
+        </form>
 
-    {% if retrieved_prediction %}
-        <h2>Prediction Details</h2>
-        <p><strong>Stage:</strong> {{ retrieved_prediction.stage }}</p>
-        <p><strong>Characteristics:</strong> {{ retrieved_prediction.characteristics }}</p>
-        <p><strong>Solutions:</strong> {{ retrieved_prediction.solutions|join(', ') }}</p>
-    {% endif %}
-    
-    <h2>Previous Predictions</h2>
-    <ul>
-        {% for prediction in predictions %}
-            <li>
-                <strong>Stage:</strong> {{ prediction.stage }}<br>
-                <strong>Timestamp:</strong> {{ prediction.timestamp }}<br>
-                <!-- Add more details if needed -->
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('logout') }}">Logout</a>
+        {% if retrieved_prediction %}
+            <h2>Prediction Details</h2>
+            <p><strong>Stage:</strong> {{ retrieved_prediction.stage }}</p>
+            <p><strong>Characteristics:</strong> {{ retrieved_prediction.characteristics }}</p>
+            <p><strong>Solutions:</strong> {{ retrieved_prediction.solutions|join(', ') }}</p>
+        {% endif %}
+        
+        <!--h2>Previous Predictions</h2-->
+        <ul>
+            {% for prediction in predictions %}
+                <li>
+                    <strong>Stage:</strong> {{ prediction.stage }}<br>
+                    <strong>Timestamp:</strong> {{ prediction.timestamp }}<br>
+                </li>
+            {% endfor %}
+        </ul>
 
-    <!-- Chat section -->
-    <div id="chat">
-        <h2>Chat with Patients</h2>
-        <div id="chat-messages"></div>
-        <input type="text" id="chat-input" placeholder="Type your message here...">
-        <button id="send-btn">Send</button>
-    </div>
+        <!-- Chat section -->
+        <div id="chat">
+            <h2>Chat with Patient</h2>
+            <div id="chat-messages"></div>
+            <input type="text" id="chat-input" placeholder="Type your message here...">
+            <button id="send-btn">Send</button>
+        </div>
+    </main>
 
     <script>
         const socket = io();
         const username = "{{ username }}";  // Doctor's username
-        const room = "doctor_room";  // Doctor's room
+        const room = "doctor_room";  // Room shared with patients
 
         // Join the room
         socket.emit('join', { username: username, room: room });
