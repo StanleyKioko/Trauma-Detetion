@@ -7,16 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="home-container container">
-        <h2>Hello, {{ username }}!</h2>
-        <p>
-            Our mission is to support you in identifying the stages of trauma in children and providing guidance for effective intervention. With our system, you can gain insights into the emotional and psychological impact of trauma and explore practical solutions.
-        </p>
-        <p>
-            Take the first step towards understanding and healing by using our prediction tool. We’re here to assist you every step of the way.
-        </p>
-        <a href="{{ url_for('predict') }}">Make a Prediction</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+    <h1>Welcome, {{ username }}!</h1>
+    {% if role == 'doctor' %}
+        <p>You are logged in as a doctor. <a href="{{ url_for('doctor_dashboard') }}">Go to your dashboard</a>.</p>
+    {% else %}
+        <p>You are logged in as a patient. <a href="{{ url_for('patient_dashboard') }}">Go to your dashboard</a>.</p>
+    {% endif %}
+    <p><a href="{{ url_for('logout') }}">Logout</a></p>
 </body>
 </html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Messages</title>
+</head>
+<body>
+    <h1>Messages from Patient</h1>
+    <ul>
+        {% for message in messages %}
+            <li>{{ message.message }} ({{ message.timestamp }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Reply to Patient</h2>
+    <form action="{{ url_for('reply_message', user_id=user_id) }}" method="POST">
+        <textarea name="reply" rows="5" cols="50" placeholder="Write your reply here..." required></textarea><br>
+        <input type="submit" value="Send Reply">
+    </form>
+</body>
+</html>

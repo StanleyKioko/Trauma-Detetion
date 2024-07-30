@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Response</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Send Response</h1>
+    <form method="post">
+        <textarea name="response" placeholder="Write your response to the patient..."></textarea>
+        <button type="submit">Send Response</button>
+    </form>
+    <a href="{{ url_for('doctor_home') }}">Back to Doctor Home</a>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Welcome, {{ username }}</h1>
+    <form method="post">
+        <label for="submission_id">Enter Submission ID:</label>
+        <input type="text" id="submission_id" name="submission_id" required>
+        <button type="submit">Retrieve</button>
+    </form>
+
+    {% if retrieved_prediction %}
+        <h2>Prediction Details</h2>
+        <p><strong>Stage:</strong> {{ retrieved_prediction.stage }}</p>
+        <p><strong>Characteristics:</strong> {{ retrieved_prediction.characteristics }}</p>
+        <p><strong>Solutions:</strong> {{ retrieved_prediction.solutions|join(', ') }}</p>
+    {% endif %}
+    
+    <h2>Previous Predictions</h2>
+    <ul>
+        {% for prediction in predictions %}
+            <li>
+                <strong>Stage:</strong> {{ prediction.stage }}<br>
+                <strong>Timestamp:</strong> {{ prediction.timestamp }}<br>
+                <!-- Add more details if needed -->
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Welcome, {{ username }}</h1>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </header>
+    <main>
+        <h2>Prediction Form</h2>
+        <form id="prediction-form">
+            <input type="hidden" name="doctor_id" value="{{ doctor_id }}">
+
+            <label for="severity">Severity:</label>
+            <input type="text" id="severity" name="severity" required><br>
+            
+            <label for="psychological_impact">Psychological Impact:</label>
+            <input type="text" id="psychological_impact" name="psychological_impact" required><br>
+
+            <label for="previous_trauma_history">Previous Trauma History:</label>
+            <input type="text" id="previous_trauma_history" name="previous_trauma_history" required><br>
+
+            <label for="medical_history">Medical History:</label>
+            <input type="text" id="medical_history" name="medical_history" required><br>
+
+            <label for="therapy_history">Therapy History:</label>
+            <input type="text" id="therapy_history" name="therapy_history" required><br>
+
+            <label for="lifestyle_factors">Lifestyle Factors:</label>
+            <input type="text" id="lifestyle_factors" name="lifestyle_factors" required><br>
+
+            <label for="resilience_factors">Resilience Factors:</label>
+            <input type="text" id="resilience_factors" name="resilience_factors" required><br>
+
+            <label for="exposure_to_stressors">Exposure to Stressors:</label>
+            <input type="text" id="exposure_to_stressors" name="exposure_to_stressors" required><br>
+
+            <label for="sleep_patterns">Sleep Patterns:</label>
+            <input type="text" id="sleep_patterns" name="sleep_patterns" required><br>
+
+            <label for="emotional_regulation">Emotional Regulation:</label>
+            <input type="text" id="emotional_regulation" name="emotional_regulation" required><br>
+
+            <button type="submit">Submit Prediction</button>
+        </form>
+    </main>
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            fetch('/submit_prediction', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    alert('Prediction submitted successfully. Your prediction ID is: ' + result.prediction_id);
+                } else {
+                    alert('Error submitting prediction: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

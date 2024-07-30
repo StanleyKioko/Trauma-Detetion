@@ -4,33 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Results</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="results-container container">
-        <h2>Prediction Results</h2>
-        <p class="intro-text">Based on the data you provided, here are the results:</p>
-        <div class="result-section">
-            <h3>Trauma Stage</h3>
-            <p class="result-stage">{{ stage }}</p>
-        </div>
-        <div class="result-section">
-            <h3>Characteristics</h3>
-            <p class="result-characteristics">{{ characteristics | join(", ") }}</p>
-        </div>
-        <div class="result-section">
-            <h3>Possible Interventions</h3>
-            <ul class="result-solutions">
-                {% for solution in solutions %}
-                    <li>{{ solution }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="button-container">
-            <a href="{{ url_for('predict') }}" class="blue-button">Make Another Prediction</a>
-            <a href="{{ url_for('home') }}" class="blue-button">Go Back Home</a>
-            <a href="{{ url_for('logout') }}" class="blue-button">Logout</a>
-        </div>
-    </div>
+    <h1>Prediction Results</h1>
+    <p><strong>Stage:</strong> {{ stage }}</p>
+    <p><strong>Characteristics:</strong> {{ characteristics }}</p>
+    <p><strong>Solutions:</strong> {{ solutions }}</p>
+    <a href="{{ url_for('predict') }}">Make Another Prediction</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>

@@ -1,324 +1,73 @@
-/* General Styles for All Pages */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
 }
 
-h1, h2 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
 .container {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 30px;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
     background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Home Page */
-.home-container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+h1 {
     text-align: center;
+    color: #333;
 }
 
-.home-container p {
-    line-height: 1.6;
-    margin: 15px 0;
-    color: #555;
+form {
+    margin-bottom: 20px;
 }
 
-.home-container a {
-    text-decoration: none;
-    color: #3498db;
+label {
     display: block;
-    margin-top: 15px;
+    margin-bottom: 5px;
     font-weight: bold;
-    font-size: 1.1em;
 }
 
-.home-container a:hover {
-    text-decoration: underline;
-}
-
-/* Sign Up and Login Pages */
-.signup-login-container {
-    max-width: 500px;
-    margin: 30px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.signup-login-container h2 {
-    margin-bottom: 20px;
-    color: #2c3e50;
-}
-
-.signup-login-container form {
-    margin-top: 10px;
-}
-
-.signup-login-container label {
-    display: block;
-    margin-bottom: 10px;
-    color: #555;
-}
-
-.signup-login-container input[type="text"],
-.signup-login-container input[type="email"],
-.signup-login-container input[type="password"] {
+input[type="number"],
+textarea {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.signup-login-container button[type="submit"] {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
-    font-size: 1.1em;
-}
-
-.signup-login-container button[type="submit"]:hover {
-    background-color: #2980b9;
-}
-
-.signup-login-container .error {
-    color: #e74c3c;
-    margin-top: 10px;
-}
-
-.signup-login-container p {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.signup-login-container p a {
-    color: #3498db;
-}
-
-.signup-login-container p a:hover {
-    text-decoration: underline;
-}
-
-/* Prediction Page */
-.prediction-container {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.prediction-container form {
-    margin-top: 10px;
-}
-
-.prediction-container label {
-    display: block;
+    padding: 10px;
     margin-bottom: 10px;
-    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-.prediction-container input[type="number"] {
-    width: calc(100% - 24px);
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.prediction-container .blue-button {
-    background-color: #3498db;
+button {
+    padding: 10px 20px;
+    background-color: #5cb85c;
     color: white;
     border: none;
-    padding: 12px;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: 5px;
-    font-size: 1.1em;
-    margin-right: 10px;
 }
 
-.prediction-container .blue-button:hover {
-    background-color: #2980b9;
+button:hover {
+    background-color: #4cae4c;
 }
 
-.prediction-container .green-button {
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    padding: 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 1.1em;
-    margin-left: 10px;
-}
-
-.prediction-container .green-button:hover {
-    background-color: #27ae60;
-}
-
-.prediction-container ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.prediction-container .button-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Results Page */
-.results-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-    border: 1px solid #e0e0e0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.results-container::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: linear-gradient(135deg, #1e90ff 0%, #00c6ff 100%);
-    border-radius: 50%;
-    z-index: 0;
-    opacity: 0.2;
-}
-
-.results-container h2 {
-    color: #2c3e50;
-    font-size: 1.8em;
+#messages {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    height: 150px;
+    overflow-y: scroll;
     margin-bottom: 20px;
-    font-weight: 700;
-    position: relative;
-    z-index: 1;
 }
 
-.results-container .intro-text {
-    color: #555;
-    font-size: 1.1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 1;
+.prediction {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-.results-container .result-stage {
-    color: #2c3e50;
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 1;
-}
-
-.results-container .result-characteristics {
-    color: #555;
-    font-size: 1.1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 1;
-    text-align: left;
-    white-space: pre-wrap; /* Ensures that text wraps correctly */
-}
-
-.results-container .result-solutions {
-    color: #555;
-    font-size: 1.1em;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    text-align: center;
-    list-style-type: none; /* Removes default list styling */
-    padding: 0; /* Removes default padding */
-}
-
-.results-container .result-solutions li {
-    margin: 12px 0;
-    color: #555;
-    font-size: 1.1em;
-    position: relative;
-}
-
-/*.results-container .result-solutions li::before {
-    content: '•';
-    color: #1e90ff;
-    font-size: 1.5em;
-    position: absolute;
-    left: -30px; /* Adjusted to ensure bullets do not overlap text */
-    /*top: 0;
-}*/
-
-.results-container .button-container {
-    text-align: center;
-    margin-top: 30px;
-}
-
-.results-container .button-container a {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-/* Ensure the buttons are horizontal */
-.results-container .button-container .blue-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 1.1em;
-    text-decoration: none;
-    margin: 5px;
-}
-
-.results-container .button-container .blue-button:hover {
-    background-color: #2980b9;
-}
-
-.results-container .button-container .green-button {
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    padding: 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 1.1em;
-    text-decoration: none;
-    margin: 5px;
-}
-
-.results-container .button-container .green-button:hover {
-    background-color: #27ae60;
+.prediction p {
+    margin: 0;
+    padding: 2px 0;
 }

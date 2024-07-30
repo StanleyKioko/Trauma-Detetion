@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from flask_socketio import SocketIO, emit, join_room, leave_room
 import joblib
 import numpy as np
-from werkzeug.security import generate_password_hash, check_password_hash
 import pyrebase
 import os
+from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Firebase Configuration
 firebaseConfig = {
@@ -23,51 +26,28 @@ firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 db = firebase.database()
 
-# Set a secret key for session management
-app.secret_key = os.urandom(24)
-
 # Load the saved model
 model = joblib.load('best_model.pkl')
 print("Model loaded successfully")
 
 # Define trauma stages
 trauma_stages = {
-    0: {
-        'stage': 'Anger',
-        'characteristics': 'Characterized by frustration and anger.,Anxiety,Emotional exhaustion,High blood pressure,Insomnia,Passive-aggressive behavior,Alterations in thinking and mood,Continued obsession with the traumatic event,Depression,Difficulty concentrating,Intrusive memories,Muscle tension,Rapid breathing or hyperventilation',
-        'solutions': ['Therapy', 'Anger management', 'Support groups']
-    },
-    1: {
-        'stage': 'Sadness',
-        'characteristics': 'Deep sadness and crying, Exhaustion, Anxiety, Agitation, Numbness, Dissociation, Confusion, Physical arousal, and Blunted affect.',
-        'solutions': ['Counseling', 'Emotional support', 'Medication']
-    },
-    2: {
-        'stage': 'Acceptance',
-        'characteristics': 'Acceptance is the final stage of the trauma response cycle.',
-        'solutions': ['Mindfulness', 'Support networks', 'Therapy']
-    },
-    3: {
-        'stage': 'Denial',
-        'characteristics': 'Characterized by refusal to acknowledge the trauma.,Many may isolate themselves from others while struggling in the denial stage',
-        'solutions': ['Counseling', 'Education about trauma', 'Peer support']
-    },
-    4: {
-        'stage': 'Bargaining',
-        'characteristics': 'Characterized by attempts to negotiate out of trauma. The bargaining stage of trauma focuses on thoughts that take place within the mind. These thoughts occur as someone tries to explain how things could have been done differently or better. In a sense, these negotiations are an individuals thoughts attempting to exchange one thing for another',
-        'solutions': ['Therapy', 'Support groups', 'Stress management']
-    },
-    5: {
-        'stage': 'Depression',
-        'characteristics': 'Characterized by feelings of severe despondency.negative emotions, Guilt, Shame, Self-blame, Social withdrawal, or SSocial isolation.',
-        'solutions': ['Counseling', 'Medication', 'Therapeutic activities']
-    }
+    0: {'stage': 'Anger', 'characteristics': '...', 'solutions': ['Therapy', 'Anger management', 'Support groups']},
+    1: {'stage': 'Sadness', 'characteristics': '...', 'solutions': ['Counseling', 'Emotional support', 'Medication']},
+    2: {'stage': 'Acceptance', 'characteristics': '...', 'solutions': ['Mindfulness', 'Support networks', 'Therapy']},
+    3: {'stage': 'Denial', 'characteristics': '...', 'solutions': ['Counseling', 'Education about trauma', 'Peer support']},
+    4: {'stage': 'Bargaining', 'characteristics': '...', 'solutions': ['Therapy', 'Support groups', 'Stress management']},
+    5: {'stage': 'Depression', 'characteristics': '...', 'solutions': ['Counseling', 'Medication', 'Therapeutic activities']}
 }
 
 @app.route('/')
 def index():
     if 'user' in session:
-        return redirect(url_for('home'))
+        role = session.get('role')
+        if role == 'doctor':
+            return redirect(url_for('doctor_dashboard'))
+        elif role == 'patient':
+            return redirect(url_for('patient_dashboard'))
     return redirect(url_for('signup'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -79,6 +59,7 @@ def signup():
         id_number = request.form['id_number']
         country_code = request.form['country_code']
         phone_number = request.form['phone_number']
+        role = request.form['role']
         try:
             user = auth.create_user_with_email_and_password(email, password)
             user_id = user['localId']
@@ -87,29 +68,18 @@ def signup():
                 "email": email,
                 "id_number": id_number,
                 "country_code": country_code,
-                "phone_number": phone_number
+                "phone_number": phone_number,
+                "role": role
             }
             db.child("users").child(user_id).set(data)
             session['user'] = user
-            return redirect(url_for('home'))
+            session['role'] = role
+            if role == 'doctor':
+                return redirect(url_for('doctor_dashboard'))
+            else:
+                return redirect(url_for('patient_dashboard'))
         except Exception as e:
             error_message = str(e)
-            if "EMAIL_EXISTS" in error_message:
-                error_message = "The email address is already in use. Please use a different email address."
-            elif "INVALID_EMAIL" in error_message:
-                error_message = "Invalid email address. Please check your email and try again."
-            elif "WEAK_PASSWORD" in error_message:
-                error_message = "The password is too weak. Please choose a stronger password."
-            elif "USER_DISABLED" in error_message:
-                error_message = "This user account has been disabled."
-            elif "INVALID_PASSWORD" in error_message:
-                error_message = "The password is invalid or the user does not have a password."
-            elif "USER_NOT_FOUND" in error_message:
-                error_message = "There is no user corresponding to this email address."
-            elif "OPERATION_NOT_ALLOWED" in error_message:
-                error_message = "Operation not allowed. Please contact support."
-            else:
-                error_message = "An unexpected error occurred: " + error_message
             return render_template('signup.html', error=error_message)
     return render_template('signup.html')
 
@@ -121,108 +91,139 @@ def login():
         try:
             user = auth.sign_in_with_email_and_password(email, password)
             session['user'] = user
-            return redirect(url_for('home'))
+            user_id = user['localId']
+            user_data = db.child("users").child(user_id).get().val()
+            session['role'] = user_data.get('role')
+            if session['role'] == 'doctor':
+                return redirect(url_for('doctor_dashboard'))
+            elif session['role'] == 'patient':
+                return redirect(url_for('patient_dashboard'))
         except Exception as e:
             error_message = str(e)
-            if "INVALID_EMAIL" in error_message:
-                error_message = "Invalid email address. Please check your email and try again."
-            elif "USER_NOT_FOUND" in error_message:
-                error_message = "No account found with this email address. Please sign up."
-            elif "INVALID_PASSWORD" in error_message:
-                error_message = "Incorrect password. Please try again."
-            elif "USER_DISABLED" in error_message:
-                error_message = "This user account has been disabled."
-            else:
-                error_message = "An unexpected error occurred: " + error_message
             return render_template('login.html', error=error_message)
     return render_template('login.html')
-
-@app.route('/home')
-def home():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    user = session['user']
-    user_info = db.child("users").child(user['localId']).get().val()
-    username = user_info['full_name']
-    return render_template('home.html', username=username)
-
-@app.route('/predict', methods=['GET', 'POST'])
-def predict():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    if request.method == 'POST':
-        try:
-            data = request.form  # Get the form data
-
-            # Extract the features from the form data
-            features = [
-                float(data['severity']),
-                float(data['psychological_impact']),
-                float(data['previous_trauma_history']),
-                float(data['medical_history']),
-                float(data['therapy_history']),
-                float(data['lifestyle_factors']),
-                float(data['resilience_factors']),
-                float(data['exposure_to_stressors']),
-                float(data['sleep_patterns']),
-                float(data['emotional_regulation'])
-            ]
-
-            # Check if all features are zero
-            if all(feature == 0 for feature in features):
-                return redirect(url_for('results', stage='Unknown', characteristics='', solutions=''))
-            
-            # Convert features to a numpy array and reshape for prediction
-            features = np.array(features).reshape(1, -1)
-            
-            # Make the prediction
-            prediction = model.predict(features)
-
-            # Get the predicted trauma stage
-            predicted_stage = trauma_stages.get(prediction[0], None)
-
-            if predicted_stage is None:
-                return jsonify({'error': 'Invalid prediction'}), 400
-
-            # Prepare the characteristics and solutions for URL
-            characteristics = '|'.join(predicted_stage['characteristics'].split(','))
-            solutions = '|'.join(predicted_stage['solutions'])
-
-            # Redirect to the results page with the prediction result
-            return redirect(url_for('results', 
-                                    stage=predicted_stage['stage'], 
-                                    characteristics=characteristics, 
-                                    solutions=solutions))
-        
-        except KeyError as e:
-            # Handle missing data keys
-            return jsonify({'error': f'Missing key: {str(e)}'}), 400
-        except Exception as e:
-            # Handle other exceptions
-            return jsonify({'error': str(e)}), 400
-    return render_template('predict.html')
-
-@app.route('/results')
-def results():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    
-    stage = request.args.get('stage', 'No result available')
-    characteristics = request.args.get('characteristics', 'No characteristics available')
-    solutions_str = request.args.get('solutions', '')
-    solutions = solutions_str.split('|')
-    characteristics_list = characteristics.split('|') if characteristics else []
-
-    return render_template('Results.html', stage=stage, characteristics=characteristics_list, solutions=solutions)
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
+    session.pop('role', None)
     return redirect(url_for('login'))
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return jsonify({'error': 'Page not found'}), 404
+@app.route('/doctor_dashboard', methods=['GET', 'POST'])
+def doctor_dashboard():
+    if 'user' not in session or session['role'] != 'doctor':
+        return redirect(url_for('login'))
+    
+    user = session['user']
+    user_id = user['localId']
+    user_info = db.child("users").child(user_id).get().val()
+    username = user_info.get('full_name', 'Unknown')
+    
+    try:
+        predictions = db.child("predictions").order_by_child("doctor_id").equal_to(user_id).get()
+        prediction_list = [pred.val() for pred in predictions.each()] if predictions.each() else []
+    except Exception as e:
+        print("Error fetching predictions:", e)
+        prediction_list = []
+    
+    if request.method == 'POST':
+        submission_id = request.form.get('submission_id')
+        try:
+            retrieved_prediction = db.child("predictions").child(submission_id).get().val()
+            return render_template('doctor_dashboard.html', user=user, username=username, predictions=prediction_list, retrieved_prediction=retrieved_prediction)
+        except Exception as e:
+            print("Error retrieving prediction:", e)
+            return render_template('doctor_dashboard.html', user=user, username=username, predictions=prediction_list, error=str(e))
+    
+    return render_template('doctor_dashboard.html', user=user, username=username, predictions=prediction_list)
+
+@app.route('/patient_dashboard')
+def patient_dashboard():
+    if 'user' not in session or session['role'] != 'patient':
+        return redirect(url_for('login'))
+    
+    user = session['user']
+    user_id = user['localId']
+    user_info = db.child("users").child(user_id).get().val()
+    username = user_info.get('full_name', 'Unknown')
+    
+    # Retrieve doctor's ID for the form
+    try:
+        doctors = db.child("users").order_by_child("role").equal_to("doctor").get()
+        doctor_list = [doc.key() for doc in doctors.each()] if doctors.each() else []
+        doctor_id = doctor_list[0] if doctor_list else ''
+    except Exception as e:
+        print("Error fetching doctors:", e)
+        doctor_id = ''
+    
+    return render_template('patient_dashboard.html', user=user, username=username, doctor_id=doctor_id)
+
+@app.route('/submit_prediction', methods=['POST'])
+def submit_prediction():
+    if 'user' not in session or session['role'] != 'patient':
+        return redirect(url_for('login'))
+    
+    user = session['user']
+    user_id = user['localId']
+    data = request.json
+    
+    try:
+        features = np.array([
+            float(data.get('severity', 0)),  # Default to 0 if not present
+            float(data.get('psychological_impact', 0)),
+            float(data.get('previous_trauma_history', 0)),
+            float(data.get('medical_history', 0)),
+            float(data.get('therapy_history', 0)),
+            float(data.get('lifestyle_factors', 0)),
+            float(data.get('resilience_factors', 0)),
+            float(data.get('exposure_to_stressors', 0)),
+            float(data.get('sleep_patterns', 0)),
+            float(data.get('emotional_regulation', 0))
+        ])
+        
+        prediction = model.predict([features])[0]
+        trauma_stage = trauma_stages.get(prediction, {'stage': 'Unknown', 'characteristics': 'Unknown', 'solutions': ['Unknown']})
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        prediction_data = {
+            "patient_id": user_id,
+            "doctor_id": data.get('doctor_id', ''),
+            "prediction": int(prediction),
+            "stage": trauma_stage['stage'],
+            "characteristics": trauma_stage['characteristics'],
+            "solutions": trauma_stage['solutions'],
+            "timestamp": timestamp
+        }
+        
+        # Generate a unique ID for each prediction
+        prediction_ref = db.child("predictions").push(prediction_data)
+        prediction_id = prediction_ref['name']
+        db.child("predictions").child(prediction_id).update({"prediction_id": prediction_id})
+        
+        return jsonify({"status": "success", "prediction_id": prediction_id})
+    except Exception as e:
+        print("Error in prediction submission:", e)
+        return jsonify({"status": "error", "message": str(e)})
+
+@socketio.on('message')
+def handle_message(data):
+    room = data.get('room')
+    message = data.get('message')
+    emit('message', {'message': message}, room=room)
+
+@socketio.on('join')
+def on_join(data):
+    username = data.get('username')
+    room = data.get('room')
+    join_room(room)
+    emit('message', {'message': f'{username} has entered the room.'}, room=room)
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data.get('username')
+    room = data.get('room')
+    leave_room(room)
+    emit('message', {'message': f'{username} has left the room.'}, room=room)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
