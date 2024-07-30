@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
     <h1>Welcome, {{ username }}</h1>
@@ -32,5 +33,36 @@
         {% endfor %}
     </ul>
     <a href="{{ url_for('logout') }}">Logout</a>
+
+    <!-- Chat section -->
+    <div id="chat">
+        <h2>Chat with Patients</h2>
+        <div id="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="Type your message here...">
+        <button id="send-btn">Send</button>
+    </div>
+
+    <script>
+        const socket = io();
+        const username = "{{ username }}";  // Doctor's username
+        const room = "doctor_room";  // Doctor's room
+
+        // Join the room
+        socket.emit('join', { username: username, room: room });
+
+        // Listen for messages
+        socket.on('message', function(data) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = data.message;
+            document.getElementById('chat-messages').appendChild(messageDiv);
+        });
+
+        // Send message
+        document.getElementById('send-btn').addEventListener('click', function() {
+            const message = document.getElementById('chat-input').value;
+            socket.emit('message', { room: room, message: message });
+            document.getElementById('chat-input').value = '';
+        });
+    </script>
 </body>
 </html>

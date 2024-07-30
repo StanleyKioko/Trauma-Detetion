@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
     <header>
@@ -48,7 +49,16 @@
 
             <button type="submit">Submit Prediction</button>
         </form>
+
+        <!-- Chat section -->
+        <div id="chat">
+            <h2>Chat with Doctor</h2>
+            <div id="chat-messages"></div>
+            <input type="text" id="chat-input" placeholder="Type your message here...">
+            <button id="send-btn">Send</button>
+        </div>
     </main>
+
     <script>
         document.getElementById('prediction-form').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -77,6 +87,27 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+        });
+
+        const socket = io();
+        const username = "{{ username }}";  // Patient's username
+        const room = "doctor_room";  // Room shared with the doctor
+
+        // Join the room
+        socket.emit('join', { username: username, room: room });
+
+        // Listen for messages
+        socket.on('message', function(data) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = data.message;
+            document.getElementById('chat-messages').appendChild(messageDiv);
+        });
+
+        // Send message
+        document.getElementById('send-btn').addEventListener('click', function() {
+            const message = document.getElementById('chat-input').value;
+            socket.emit('message', { room: room, message: message });
+            document.getElementById('chat-input').value = '';
         });
     </script>
 </body>
