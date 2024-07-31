@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <h1>Welcome, {{ username }}</h1>
+        <!--h1>Welcome, {{ username }}</h1-->
         <div class="header-buttons">
             <a href="{{ url_for('signup') }}" class="go-back-button">Go Back to Sign Up</a>
             <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
@@ -17,39 +17,53 @@
     </header>
     <main>
         <h2>Welcome to the Child Trauma Stage Prediction System</h2>
-        <h3>Welcome, {{ username }}!</h3>
+        <!--h3>Welcome, {{ username }}!</h3-->
         <h2>Prediction Form</h2>
         <form id="prediction-form">
             <input type="hidden" name="doctor_id" value="{{ doctor_id }}">
-            <label for="severity">Severity:</label>
-            <input type="text" id="severity" name="severity" required><br>
+            <label for="severity">In a Scale of 1 to 10 To What Extent is the Severity of the Traumatic Symptoms:</label>
+            <input type="number" id="severity" name="severity" min="0" max="10" required><br><br>
+
+            <label for="psychological_impact">In a Scale of 1 to 10 To What Extent Has The Child Been Psychologically Impacted:</label>
+            <input type="number" id="psychological_impact" name="psychological_impact" min="0" max="10" required><br><br>
+
+            <label for="previous_trauma_history">Does the Child Have Any Previous Trauma History:</label>
+            <select id="previous_trauma_history" name="previous_trauma_history" required>
+                <option value="1">No</option>
+                <option value="2">Yes</option>
+            </select><br>
             
-            <label for="psychological_impact">Psychological Impact:</label>
-            <input type="text" id="psychological_impact" name="psychological_impact" required><br>
 
-            <label for="previous_trauma_history">Previous Trauma History:</label>
-            <input type="text" id="previous_trauma_history" name="previous_trauma_history" required><br>
+            <label for="medical_history">Does The Child Have Any Medical History:</label>
+            <select id="medical_history" name="medical_history" required>
+                <option value="1">No</option>
+                <option value="2">Yes</option>
+            </select><br>
+            
 
-            <label for="medical_history">Medical History:</label>
-            <input type="text" id="medical_history" name="medical_history" required><br>
+            <label for="therapy_history">Has The Child Has Any Therapy History:</label>
+            <select id="therapy_history" name="therapy_history" required>
+                <option value="1">No</option>
+                <option value="2">Yes</option>
+            </select><br>
+        
 
-            <label for="therapy_history">Therapy History:</label>
-            <input type="text" id="therapy_history" name="therapy_history" required><br>
+            <label for="lifestyle_factors">In a Scale of 1-10 How Much does the Lifestyle Factors Affect the Healing Process :</label>
+            <input type="number" id="lifestyle_factors" name="lifestyle_factors" min="0" max="10" required><br><br>
 
-            <label for="lifestyle_factors">Lifestyle Factors:</label>
-            <input type="text" id="lifestyle_factors" name="lifestyle_factors" required><br>
+            <label for="resilience_factors">In a Scale of 1-10 How much is the Child Exposed to Resilience Factors:</label>
+            <input type="number" id="resilience_factors" name="resilience_factors" min="0" max="10" required><br><br>
 
-            <label for="resilience_factors">Resilience Factors:</label>
-            <input type="text" id="resilience_factors" name="resilience_factors" required><br>
+            <label for="exposure_to_stressors">In a Scale of 1 to 10 How much is The hild Exposed to Stressors:</label>
+            <input type="number" id="exposure_to_stressors" name="exposure_to_stressors" min="0" max="10" required><br><br>
 
-            <label for="exposure_to_stressors">Exposure to Stressors:</label>
-            <input type="text" id="exposure_to_stressors" name="exposure_to_stressors" required><br>
+            <label for="sleep_patterns">In a scale of 1 to 10 How Much are Sleep Patterns of the Child Affected:</label>
+            <input type="number" id="sleep_patterns" name="sleep_patterns" min="0" max="10" required><br><br>
 
-            <label for="sleep_patterns">Sleep Patterns:</label>
-            <input type="text" id="sleep_patterns" name="sleep_patterns" required><br>
+            <label for="emotional_regulation">In a scale of 1 to 10 How much Are the Emotional Regulation Factors of The Child Affeted:</label>
+            <input type="number" id="emotional_regulation" name="emotional_regulation" min="0" max="10" required><br><br>
 
-            <label for="emotional_regulation">Emotional Regulation:</label>
-            <input type="text" id="emotional_regulation" name="emotional_regulation" required><br>
+            </select><br>
 
             <button type="submit">Submit Prediction</button>
         </form>

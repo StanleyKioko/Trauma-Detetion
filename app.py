@@ -32,13 +32,38 @@ print("Model loaded successfully")
 
 # Define trauma stages
 trauma_stages = {
-    0: {'stage': 'Anger', 'characteristics': '...', 'solutions': ['Therapy', 'Anger management', 'Support groups']},
-    1: {'stage': 'Sadness', 'characteristics': '...', 'solutions': ['Counseling', 'Emotional support', 'Medication']},
-    2: {'stage': 'Acceptance', 'characteristics': '...', 'solutions': ['Mindfulness', 'Support networks', 'Therapy']},
-    3: {'stage': 'Denial', 'characteristics': '...', 'solutions': ['Counseling', 'Education about trauma', 'Peer support']},
-    4: {'stage': 'Bargaining', 'characteristics': '...', 'solutions': ['Therapy', 'Support groups', 'Stress management']},
-    5: {'stage': 'Depression', 'characteristics': '...', 'solutions': ['Counseling', 'Medication', 'Therapeutic activities']}
+    0: {
+        'stage': 'Anger',
+        'characteristics': 'Outbursts of rage, frustration, irritability, and aggression. Difficulty controlling emotions and often blaming others.',
+        'solutions': ['Therapy', 'Anger management', 'Support groups', 'Mindfulness techniques', 'Physical activities to channel energy']
+    },
+    1: {
+        'stage': 'Sadness',
+        'characteristics': 'Feelings of hopelessness, tearfulness, withdrawal from activities, and a sense of deep sorrow.',
+        'solutions': ['Counseling', 'Emotional support', 'Medication', 'Engaging in hobbies', 'Connecting with loved ones']
+    },
+    2: {
+        'stage': 'Acceptance',
+        'characteristics': 'Acknowledgment of the trauma and its impact, a sense of calm, and readiness to move forward.',
+        'solutions': ['Mindfulness', 'Support networks', 'Therapy', 'Developing new goals', 'Engaging in positive activities']
+    },
+    3: {
+        'stage': 'Denial',
+        'characteristics': 'Refusal to accept the reality of the trauma, avoidance of thoughts or discussions about it, and acting as if it didn’t happen.',
+        'solutions': ['Counseling', 'Education about trauma', 'Peer support', 'Gradual exposure to trauma-related thoughts', 'Encouraging open communication']
+    },
+    4: {
+        'stage': 'Bargaining',
+        'characteristics': 'Attempting to make deals or promises to reverse or mitigate the trauma, often feeling guilt or seeking ways to regain control.',
+        'solutions': ['Therapy', 'Support groups', 'Stress management', 'Journaling', 'Reflecting on personal strengths']
+    },
+    5: {
+        'stage': 'Depression',
+        'characteristics': 'Persistent sadness, lack of energy, loss of interest in activities, changes in appetite and sleep patterns, and feelings of worthlessness.',
+        'solutions': ['Counseling', 'Medication', 'Therapeutic activities', 'Regular physical exercise', 'Building a daily routine']
+    }
 }
+
 
 @app.route('/')
 def index():
