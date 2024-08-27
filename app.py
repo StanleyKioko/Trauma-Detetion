@@ -5,6 +5,8 @@ import numpy as np
 import pyrebase
 import os
 from datetime import datetime
+from urllib.parse import quote as url_quote
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
