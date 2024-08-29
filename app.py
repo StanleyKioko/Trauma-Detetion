@@ -10,7 +10,7 @@ from urllib.parse import quote as url_quote
 
 
 
-
+from flask import Flask
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 socketio = SocketIO(app, cors_allowed_origins="*")
